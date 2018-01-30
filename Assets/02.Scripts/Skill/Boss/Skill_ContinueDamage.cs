@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class Skill_ContinueDamage : SkillBase
 {
-    private List<ClassBase> _playerList;
+    private csGameSceneManager _mngGameScene;
 
     [ SerializeField ] private float _range        = 50.0f;
     [ SerializeField ] private float _duration     = 5.5f;
     [ SerializeField ] private float _intervalTime = 0.5f;
     [ SerializeField ] private float _value        = 1.5f;
+    private float _damage = 0.0f;   // Parent Damage
 
     [ Header( "-----　Skill Effect　-----" ) ]
     [ SerializeField ] private GameObject _motionEffect;
@@ -17,46 +18,66 @@ public class Skill_ContinueDamage : SkillBase
 
     void Awake()
     {
-        // Search Players
-        GameObject[] objPlayerList = GameObject.FindGameObjectsWithTag( "Player" );
-
-        _playerList = new List<ClassBase>();
-
-        foreach ( GameObject player in objPlayerList )
-            _playerList.Add( player.GetComponent< ClassBase >() );
-
+        this._mngGameScene = GameObject.Find         ( "GameSceneManager" )
+                                       .GetComponent < csGameSceneManager >();
 
         // Skill Setting
         this._name     = "";
         this._icon     = "Boss/";
         this._cooltime = 10.0f;
+
+        this._damage   = this.GetComponentInParent< CharacterBase >().getDamage;
     }
 
     public override IEnumerator Use()
     {
         yield return null;
 
-        GameObject[] hitPlayer = new GameObject[ _playerList.Count ];
+        List<ClassBase> playerList = new List<ClassBase>();
+        _mngGameScene.GetPlayerList( ref playerList );
 
-        for ( int idx = 0; idx < _playerList.Count; idx++ )
+        GameObject[] effects = new GameObject[ playerList.Count ];
+
+        for ( int idx = 0; idx < playerList.Count; idx++ )
         {
-            if ( _playerList[ idx ] == null )
+            if ( playerList[ idx ] == null )
             {
-                _playerList.RemoveAt( idx );
+                playerList.RemoveAt( idx );
                 continue;
             }
 
-            bool isNone = _playerList[ idx ].getChrState == ClassBase.eChrState.None;
-            bool isDead = _playerList[ idx ].getChrState == ClassBase.eChrState.Dead;
+            bool isNone = playerList[ idx ].getChrState == ClassBase.eChrState.None;
+            bool isDead = playerList[ idx ].getChrState == ClassBase.eChrState.Dead;
 
             if ( isNone || isDead )
                 continue;
 
-            hitPlayer[ idx ] = Instantiate( _hitEffect , _playerList[ idx ].transform.position , Quaternion.identity , _playerList[ idx ].transform );
+
+            float distance = Vector3.Distance( this.transform.position , playerList[ idx ].transform.position );
+
+            if ( distance <= _range )
+            {
+                effects[ idx ] = Instantiate
+                (
+                    _hitEffect ,
+                    playerList[ idx ].transform.position ,
+                    Quaternion.identity                  ,
+                    playerList[ idx ].transform
+                );
+            }
         }
 
+        float damage = _value * _damage;
 
-        foreach ( GameObject effect in hitPlayer )
-            effect.SetActive( true );
+        for ( int idx = 0; idx < effects.Length; idx++ )
+        {
+            if ( effects[ idx ] == null )
+                continue;
+
+            effects[ idx ].GetComponent< Skill_ContinueDamageFire >()
+                          .Setting( _duration , _intervalTime , - ((int) damage) );
+
+            effects[ idx ].SetActive( true );
+        }
     }
 }

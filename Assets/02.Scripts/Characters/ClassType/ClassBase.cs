@@ -39,13 +39,30 @@ public abstract class ClassBase : CharacterBase
     #endregion
 
 
+    private csGameSceneManager _mngGameScene;
+
     protected virtual void Awake()
     {
+        _mngGameScene = GameObject.Find         ( "GameSceneManager" )
+                                  .GetComponent < csGameSceneManager >();
+
+        _mngGameScene.AddPlayer( this );
+
         SettingButtons();
     }
 
+    protected virtual void OnEnable()
+    {
+        
+    }
+
+    protected virtual void OnDisable()
+    {
+        _mngGameScene.RemovePlayer( this );
+    }
+
     // 적이 나에게 데미지를 보냄
-    public    abstract void RecvDamage(int damage);
+    public abstract void RecvDamage(int damage);
 
 
     protected void SettingButtons()

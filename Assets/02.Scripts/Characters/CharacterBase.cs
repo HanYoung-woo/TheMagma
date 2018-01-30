@@ -13,6 +13,10 @@ public abstract class CharacterBase : MonoBehaviour
     };
 
     [ SerializeField ] protected Stat _stat;
+    public int getDamage
+    {
+        get { return _stat._damage; }
+    }
 
     public void SetHP(int value)
     {

@@ -12,10 +12,16 @@ public class Shilder : ClassBase
 
     public override void RecvDamage(int damage)
     {
-        
+        SetHP( damage );
+
+        if ( _stat._curHP <= 0 )
+        {
+            _chrState = eChrState.Dead;
+        }
     }
 
     protected override void BasicAttack()
     {
+        Debug.Log( "공격!!!" );
     }
 }
