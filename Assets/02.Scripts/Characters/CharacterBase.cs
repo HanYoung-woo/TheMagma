@@ -2,6 +2,7 @@ using UnityEngine;
 
 public abstract class CharacterBase : MonoBehaviour
 {
+    [ System.Serializable ]
     protected struct Stat
     {
         public string _name;
@@ -11,7 +12,7 @@ public abstract class CharacterBase : MonoBehaviour
         public float  _moveSpeed;
     };
 
-    protected Stat _stat;
+    [ SerializeField ] protected Stat _stat;
 
     public void SetHP(int value)
     {
