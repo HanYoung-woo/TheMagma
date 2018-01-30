@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public abstract class ClassBase : CharacterBase
 {
+    #region =====　enum ClassType　=====
     public enum eClassType
     {
         None = -1 ,
@@ -11,29 +11,45 @@ public abstract class ClassBase : CharacterBase
         Archer  ,
         Bishop
     };
+
+    [ SerializeField ]
     protected eClassType _classType = eClassType.None;
     public    eClassType getClassType
     {
         get { return _classType; }
     }
+    #endregion
 
-    protected List<SkillBase> _skill_List;
+
+    #region =====　enum ChrState　=====
+    public enum eChrState
+    {
+        None = -1 ,
+        Idle   , Move     , Run ,
+        Attack , Attacked ,
+        Dead
+    };
+
+    [ SerializeField ]
+    protected eChrState _chrState = eChrState.None;
+    public    eChrState getChrState
+    {
+        get { return _chrState; }
+    }
+    #endregion
+
 
     protected virtual void Awake()
     {
         SettingButtons();
     }
 
-    // 내가 적에게 데미지를 보냄
-    protected abstract void SendDamage();
     // 적이 나에게 데미지를 보냄
     public    abstract void RecvDamage(int damage);
 
 
     protected void SettingButtons()
     {
-        _skill_List = new List<SkillBase>();
-
         Transform   tfJoystick = GameObject.Find( "btnAttackGroup" ).transform;
         Button[]    btns       = tfJoystick.GetComponentsInChildren< Button >();
         
@@ -48,6 +64,7 @@ public abstract class ClassBase : CharacterBase
 
             if( ! int.TryParse( btnName , out btnIdx ) )
             {
+                // 기본공격 셋팅
                 btn.onClick.AddListener
                 (
                     () => { BasicAttack(); }
@@ -55,7 +72,7 @@ public abstract class ClassBase : CharacterBase
                 continue;
             }
 
-
+            // 스킬 셋팅
             SkillBase skill = skill_list[ btnIdx ];
 
             string path = skill.getIcon;
@@ -65,8 +82,6 @@ public abstract class ClassBase : CharacterBase
             (
                 () => { StartCoroutine( skill.Use() ); }
             );
-
-            _skill_List.Add( skill );
         }
     }
 

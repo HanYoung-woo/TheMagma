@@ -2,10 +2,12 @@
 
 public abstract class SkillBase : MonoBehaviour
 {
+    [ SerializeField ]
     protected string _name;
 
 
     #region =====　Property　=====
+    [ SerializeField ]
     protected string _icon;
     public    string getIcon
     {
@@ -19,6 +21,7 @@ public abstract class SkillBase : MonoBehaviour
         }
     }
 
+    [ SerializeField ]
     protected float _cooltime;
     public    float getCooltime
     {
