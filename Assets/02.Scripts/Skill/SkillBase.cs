@@ -24,12 +24,6 @@ public abstract class SkillBase : MonoBehaviour
     {
         get { return _cooltime; }
     }
-
-    protected float _value;
-    public    float getValue
-    {
-        get { return _value; }
-    }
     #endregion
 
 
